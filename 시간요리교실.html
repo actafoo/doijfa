@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간 요리교실 🍳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF6E9; --paper:#FFFCF5; --tomato:#E8573F; --tomato-dark:#C8412C;
+    --yellow:#F7B731; --green:#5FA86A; --green-dark:#3F7E48;
+    --brown:#5A3E2B; --brown-soft:#8A6A52; --line:#E8D8C0; --shadow:rgba(90,62,43,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Gowun Dodum',sans-serif; color:var(--brown);
+    background:
+      radial-gradient(circle at 12% 14%, #FFE9C7 0, transparent 36%),
+      radial-gradient(circle at 90% 10%, #FFD9CF 0, transparent 32%),
+      radial-gradient(circle at 82% 92%, #DCEFD5 0, transparent 38%),
+      var(--cream);
+    height:100dvh; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; padding:10px 12px; overflow:hidden;
+  }
+  .wrap{width:100%; max-width:500px; display:flex; flex-direction:column; gap:9px}
+
+  header{text-align:center}
+  h1{font-family:'Jua',sans-serif; font-size:clamp(24px,6.5vw,34px); color:var(--tomato);
+     letter-spacing:1px; text-shadow:2px 2px 0 #fff, 3px 4px 0 var(--shadow);}
+  .subtitle{font-size:12.5px; color:var(--brown-soft); margin-top:1px}
+
+  .tabs{display:flex; gap:8px}
+  .tab{flex:1; font-family:'Jua',sans-serif; font-size:14px; padding:9px 6px;
+    border:3px solid var(--brown); border-radius:14px; background:var(--paper);
+    color:var(--brown); cursor:pointer; box-shadow:0 3px 0 var(--brown);
+    transition:transform .08s,box-shadow .08s,background .2s; line-height:1.2;}
+  .tab small{display:block; font-family:'Gowun Dodum'; font-size:10px; color:var(--brown-soft); margin-top:1px}
+  .tab.active{background:var(--yellow)} .tab.active small{color:var(--brown)}
+  .tab:active{transform:translateY(3px); box-shadow:0 0 0 var(--brown)}
+
+  .score-row{display:flex; justify-content:center; gap:8px; align-items:center}
+  .pill{background:var(--paper); border:2px solid var(--line); border-radius:999px;
+    padding:5px 13px; font-size:13px; display:flex; align-items:center; gap:5px; box-shadow:0 2px 0 var(--shadow);}
+  .pill b{font-family:'Jua'; color:var(--tomato); font-size:16px}
+  .pill.streak b{color:var(--green-dark)}
+  .dice{font-family:'Gowun Dodum'; font-size:13px; background:var(--paper); border:2px solid var(--line);
+    border-radius:999px; padding:5px 12px; cursor:pointer; box-shadow:0 2px 0 var(--shadow);}
+  .dice:active{transform:translateY(2px)}
+
+  .card{background:var(--paper); border:3px solid var(--brown); border-radius:22px;
+    padding:14px 16px 16px; box-shadow:0 7px 0 var(--shadow); position:relative; overflow:hidden;}
+  .card::before{content:""; position:absolute; top:0; left:0; right:0; height:10px;
+    background:repeating-linear-gradient(90deg,var(--tomato) 0 16px,#fff 16px 32px); opacity:.85;}
+
+  .top{display:flex; align-items:center; gap:14px; margin-top:6px}
+  .dish{display:flex; align-items:center; gap:12px; flex-shrink:0}
+  .emoji-wrap{position:relative; display:inline-block}
+  .emoji{font-size:78px; line-height:1; display:inline-block;
+    filter:drop-shadow(0 5px 4px var(--shadow)); transition:filter .45s, opacity .45s;}
+  .fx{position:absolute; top:-6px; right:-16px; font-size:26px; pointer-events:none}
+  .dish .name{font-family:'Jua'; font-size:21px; line-height:1.1}
+
+  /* ---- 요리 상태 그림 ---- */
+  .dish.burnt .emoji{filter:brightness(.26) saturate(.3) contrast(1.3) drop-shadow(0 5px 4px var(--shadow));}
+  .dish.burnt .fx{animation:smoke 1.7s infinite ease-out}
+  .dish.raw  .emoji{filter:saturate(.28) brightness(1.22) contrast(.8) drop-shadow(0 5px 4px var(--shadow)); opacity:.88;}
+  .dish.cold .emoji{filter:saturate(.5) brightness(1.06) drop-shadow(0 5px 4px var(--shadow));}
+  .dish.cold .fx{animation:shiver 1s infinite}
+  .dish.done .emoji{animation:bounce .6s}
+  .dish.done .fx{animation:twinkle 1s infinite}
+  @keyframes smoke{0%{transform:translateY(4px) scale(.8);opacity:0}30%{opacity:.9}100%{transform:translateY(-22px) scale(1.4);opacity:0}}
+  @keyframes shiver{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+  @keyframes twinkle{0%,100%{transform:scale(1) rotate(0);opacity:1}50%{transform:scale(1.3) rotate(15deg);opacity:.7}}
+  @keyframes bounce{0%{transform:scale(1)}30%{transform:scale(1.18) translateY(-6px)}60%{transform:scale(.95)}100%{transform:scale(1)}}
+
+  .clock{flex:1; text-align:center; background:var(--cream); border:2px dashed var(--yellow);
+    border-radius:14px; padding:7px 6px;}
+  .clock .label{font-size:11px; color:var(--brown-soft); line-height:1.2}
+  .clock .time{font-family:'Jua'; font-size:28px; color:var(--tomato-dark); line-height:1.15}
+
+  .steps{list-style:none; margin:11px 0 4px; display:flex; flex-direction:column; gap:6px}
+  .steps li{display:flex; align-items:center; justify-content:space-between;
+    background:var(--cream); border:2px solid var(--line); border-radius:11px;
+    padding:7px 12px; font-size:15px; animation:pop .3s backwards;}
+  .steps li .st{display:flex; align-items:center; gap:9px}
+  .steps li .ico{font-size:19px}
+  .steps li .dur{font-family:'Jua'; color:var(--green-dark); font-size:17px}
+  @keyframes pop{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:translateY(0)}}
+
+  .prompt{text-align:center; font-size:14.5px; margin:7px 0 2px}
+  .answer{display:flex; align-items:center; justify-content:center; gap:6px; margin:8px 0 2px}
+  .field{display:flex; align-items:center; gap:4px}
+  .answer input{width:70px; height:54px; text-align:center; font-family:'Jua'; font-size:30px;
+    color:var(--brown); border:3px solid var(--brown); border-radius:14px; background:#fff;
+    box-shadow:inset 0 -4px 0 var(--line);}
+  .answer input:focus{outline:none; border-color:var(--tomato); background:#FFFBF2}
+  .answer .unit{font-family:'Jua'; font-size:21px; color:var(--brown-soft)}
+
+  .btn{font-family:'Jua'; font-size:19px; color:#fff; border:3px solid var(--brown);
+    border-radius:15px; padding:11px 10px; width:100%; cursor:pointer; margin-top:8px;
+    box-shadow:0 4px 0 var(--brown); transition:transform .08s,box-shadow .08s;}
+  .btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--brown)}
+  .btn.cook{background:var(--tomato)} .btn.next{background:var(--green)}
+
+  .feedback{text-align:center; margin-top:9px; padding:9px 12px; border-radius:14px;
+    font-size:15px; display:none; animation:pop .3s;}
+  .feedback .big{font-family:'Jua'; font-size:20px; display:block; margin-bottom:1px}
+  .feedback.good{display:block; background:#E7F4E4; border:3px solid var(--green); color:var(--green-dark)}
+  .feedback.bad{display:block; background:#FCEAE6; border:3px solid var(--tomato); color:var(--tomato-dark)}
+  .feedback .solve{font-size:12.5px; color:var(--brown-soft); margin-top:4px; line-height:1.5}
+
+  .shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .celebrate{animation:cel .5s}
+  @keyframes cel{0%{transform:scale(1)}40%{transform:scale(1.04) rotate(-1deg)}100%{transform:scale(1)}}
+  .confetti{position:fixed; top:-12px; width:10px; height:15px; z-index:50; pointer-events:none; border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>시간 요리교실 🍳</h1>
+    <div class="subtitle">시간을 더하고 빼서 맛있는 요리를 완성하자!</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" id="tabAdd" onclick="setMode('add')">완성 시간 맞히기<small>＋ 더하기</small></button>
+    <button class="tab" id="tabSub" onclick="setMode('sub')">시작 시간 맞히기<small>－ 빼기</small></button>
+  </div>
+
+  <div class="score-row">
+    <div class="pill">⭐ <b id="score">0</b></div>
+    <div class="pill streak">🔥 <b id="streak">0</b></div>
+    <button class="dice" onclick="newProblem()">🎲 다른 문제</button>
+  </div>
+
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+const DISHES=[
+  {e:'🍕',n:'피자',steps:['재료 손질','반죽 만들기','오븐에 굽기','치즈 올리기']},
+  {e:'🍰',n:'케이크',steps:['반죽 섞기','오븐에 굽기','크림 바르기','예쁘게 장식']},
+  {e:'🍪',n:'쿠키',steps:['반죽 만들기','모양 찍기','오븐에 굽기']},
+  {e:'🥘',n:'불고기',steps:['고기 손질','양념 재우기','센 불에 볶기','상 차리기']},
+  {e:'🍞',n:'식빵',steps:['반죽하기','부풀리기','오븐에 굽기']},
+  {e:'🍚',n:'김밥',steps:['재료 손질','밥 짓기','김밥 말기','먹기 좋게 썰기']},
+  {e:'🥟',n:'만두',steps:['만두소 만들기','만두 빚기','찜기에 찌기']},
+  {e:'🍳',n:'오믈렛',steps:['재료 손질','계란 풀기','노릇하게 부치기']},
+  {e:'🍜',n:'잔치국수',steps:['육수 끓이기','면 삶기','고명 올리기']},
+  {e:'🧁',n:'컵케이크',steps:['반죽 만들기','컵에 담기','오븐에 굽기']},
+];
+const ICONS=['🔪','🥣','🔥','🧂','🍴','⏲️','🧑‍🍳','🥄'];
+let mode='add', score=0, streak=0, answered=false, cur=null;
+
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function pad(t){return t.h+'시 '+(t.m<10?'0'+t.m:t.m)+'분';}
+
+function setMode(m){mode=m;
+  document.getElementById('tabAdd').classList.toggle('active',m==='add');
+  document.getElementById('tabSub').classList.toggle('active',m==='sub');
+  newProblem();}
+
+function genAdd(){
+  const dish=pick(DISHES), count=rnd(2,3);
+  const steps=dish.steps.slice(0,count).map((label,i)=>({label,ico:ICONS[i%ICONS.length],dur:rnd(2,8)*5}));
+  const startH=rnd(1,8), startM=rnd(0,11)*5;
+  const total=steps.reduce((s,x)=>s+x.dur,0);
+  let t=startH*60+startM+total;
+  return {dish,steps,start:{h:startH,m:startM},answer:{h:Math.floor(t/60),m:t%60},total};
+}
+function genSub(){
+  const dish=pick(DISHES), dur=rnd(3,10)*5, tgtH=rnd(2,11), tgtM=rnd(0,11)*5;
+  let t=tgtH*60+tgtM-dur;
+  return {dish,target:{h:tgtH,m:tgtM},dur,answer:{h:Math.floor(t/60),m:t%60}};
+}
+function newProblem(){answered=false; cur=(mode==='add')?genAdd():genSub(); render();}
+
+function render(){
+  const c=document.getElementById('card');
+  let html=`<div class="top">
+      <div class="dish" id="dish"><div class="emoji-wrap"><span class="emoji">${cur.dish.e}</span><span class="fx" id="fx"></span></div><span class="name">${cur.dish.n}</span></div>`;
+  if(mode==='add'){
+    html+=`<div class="clock"><div class="label">요리 시작 시간</div><div class="time">${pad(cur.start)}</div></div></div>
+      <ul class="steps">`;
+    cur.steps.forEach((s,i)=>{html+=`<li style="animation-delay:${i*0.08}s">
+      <span class="st"><span class="ico">${s.ico}</span>${s.label}</span><span class="dur">${s.dur}분</span></li>`;});
+    html+=`</ul><div class="prompt">⏰ 요리는 <b>몇 시 몇 분</b>에 완성될까요?</div>`;
+  }else{
+    html+=`<div class="clock"><div class="label">이 시간까지 다 차려야 해요!</div><div class="time">${pad(cur.target)}</div></div></div>
+      <ul class="steps"><li><span class="st"><span class="ico">🧑‍🍳</span>재료 손질부터 완성까지</span><span class="dur">${cur.dur}분</span></li></ul>
+      <div class="prompt">⏰ <b>몇 시 몇 분</b>에 시작해야 할까요?</div>`;
+  }
+  html+=`<div class="answer">
+      <div class="field"><input id="inH" type="number" inputmode="numeric" placeholder="?" min="0" max="23"><span class="unit">시</span></div>
+      <div class="field"><input id="inM" type="number" inputmode="numeric" placeholder="?" min="0" max="59"><span class="unit">분</span></div>
+    </div>
+    <button class="btn cook" id="mainBtn" onclick="check()">${mode==='add'?'🍳 요리 완성하기!':'⏱️ 요리 시작하기!'}</button>
+    <div class="feedback" id="fb"></div>`;
+  c.innerHTML=html;
+  const inH=document.getElementById('inH'), inM=document.getElementById('inM');
+  inH.focus();
+  inH.addEventListener('keydown',e=>{if(e.key==='Enter')inM.focus();});
+  inM.addEventListener('keydown',e=>{if(e.key==='Enter')check();});
+}
+
+function setDish(state,fx){
+  document.getElementById('dish').className='dish '+state;
+  document.getElementById('fx').textContent=fx||'';
+}
+
+function check(){
+  if(answered){newProblem();return;}
+  const hv=document.getElementById('inH').value, mv=document.getElementById('inM').value;
+  if(hv===''||mv===''){flash();return;}
+  const h=parseInt(hv,10), m=parseInt(mv,10);
+  if(isNaN(h)||isNaN(m)||m>59||m<0||h<0){flash();return;}
+  const ans=cur.answer, mine=h*60+m, right=ans.h*60+ans.m;
+  const fb=document.getElementById('fb'), card=document.getElementById('card'), btn=document.getElementById('mainBtn');
+  answered=true;
+  if(mine===right){
+    score+=10; streak+=1;
+    document.getElementById('score').textContent=score;
+    document.getElementById('streak').textContent=streak;
+    fb.className='feedback good';
+    const cheer=mode==='add'?['완성! 정말 맛있겠다! 😋','짠! 요리 완성! 🎉','노릇노릇 완벽해요! 👏']
+      :['딱 맞게 시작! 손님이 좋아해요! 😄','시간 맞춰 척척! 🎉','완벽한 타이밍! 👏'];
+    fb.innerHTML=`<span class="big">${pick(cheer)}</span>정답이에요! ＋10점`;
+    setDish('done','✨');
+    card.classList.add('celebrate'); setTimeout(()=>card.classList.remove('celebrate'),500);
+    confetti();
+  }else{
+    streak=0; document.getElementById('streak').textContent=streak;
+    fb.className='feedback bad';
+    let msg;
+    if(mode==='add'){
+      if(mine<right){msg='<span class="big">설익었어요! 🥲</span>너무 일찍 꺼냈어요. 시간이 더 필요해요!'; setDish('raw','');}
+      else{msg='<span class="big">타버렸어요! 🔥</span>너무 오래 익혔어요. 시간을 줄여보세요!'; setDish('burnt','💨');}
+    }else{
+      if(mine>right){msg='<span class="big">아직 안 됐어요! 🥲</span>너무 늦게 시작해 손님이 기다려요!'; setDish('raw','');}
+      else{msg='<span class="big">식어버렸어요! 🥶</span>너무 일찍 시작했어요!'; setDish('cold','🥶');}
+    }
+    const solve=mode==='add'?`${pad(cur.start)} ＋ ${cur.total}분 = ${pad(ans)}`:`${pad(cur.target)} － ${cur.dur}분 = ${pad(ans)}`;
+    fb.innerHTML=msg+`<div class="solve">정답: <b>${pad(ans)}</b><br>${solve}</div>`;
+    card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'),400);
+  }
+  btn.className='btn next'; btn.textContent='➡️ 다음 요리';
+}
+
+function flash(){const c=document.getElementById('card');c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),400);}
+function confetti(){
+  const cols=['#E8573F','#F7B731','#5FA86A','#4A90D9','#E86FA8'];
+  for(let i=0;i<24;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=pick(cols);
+    document.body.appendChild(c);
+    const d=1100+Math.random()*800;
+    c.animate([{transform:'translateY(0) rotate(0)',opacity:1},
+      {transform:`translateY(105vh) rotate(${Math.random()*720}deg)`,opacity:.9}],
+      {duration:d,easing:'cubic-bezier(.3,.6,.6,1)'});
+    setTimeout(()=>c.remove(),d);
+  }
+}
+newProblem();
+</script>
+</body>
+</html>
